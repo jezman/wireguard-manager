@@ -779,10 +779,9 @@ location / {
     echo "[Unit]
 Description=Run Wg Gen Web
 After=network.target
-
 [Service]
 ExecStart=/etc/wireguard/web/wg-gen-web-linux-amd64
-
+WorkingDirectory=/etc/wireguard/web
 [Install]
 WantedBy=multi-user.target" >> /usr/lib/systemd/system/wg-gen-web.service
     fi
