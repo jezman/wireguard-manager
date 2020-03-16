@@ -660,15 +660,16 @@ if [ ! -f "$WG_CONFIG" ]; then
   function install-unbound() {
     if [ "$INSTALL_UNBOUND" = "y" ]; then
       # Installation Begins Here
-    if ([ "$DISTRO" = "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ]); then
-        apt-get install unbound unbound-host e2fsp
-    if pgrep systemd-journal; then
+      if ([ "$DISTRO" = "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ]); then
+        apt-get install unbound unbound-host e2fsprogs resolvconf -y
+      if pgrep systemd-journal; then
         systemctl stop systemd-resolved
         systemctl disable systemd-resolved
-    else
+      else
         service systemd-resolved stop
         service systemd-resolved disable
-    fi
+      fi
+      fi
       if [ "$DISTRO" == "rhel" ]; then
         yum install unbound unbound-libs -y
       fi
@@ -740,7 +741,7 @@ if [ ! -f "$WG_CONFIG" ]; then
       apt-get install nginx apache2-utils zip unzip -y
     fi
     if ([ "$DISTRO" = "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "fedora" ]); then
-      yum install nginx httpd-tools zip unzipv -y
+      yum install nginx httpd-tools zip unzip -y
     fi
     mkdir -p /etc/wireguard/web
     curl https://gitlab.127-0-0-1.fr/vx3r/wg-gen-web/-/jobs/artifacts/master/download?job=build-front --create-dirs -o /etc/wireguard/web/front.zip
