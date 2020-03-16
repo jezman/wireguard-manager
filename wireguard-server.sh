@@ -145,7 +145,6 @@ usage "$@"
 # Skips all questions and just get a client conf after install.
 function headless-install() {
   if [ "$HEADLESS_INSTALL" == "y" ]; then
-    INSTALL_WIREGUARD_WEB=${INSTALL_WIREGUARD_WEB:-n}
     IPV4_SUBNET_SETTINGS=${IPV4_SUBNET_SETTINGS:-1}
     IPV6_SUBNET_SETTINGS=${IPV6_SUBNET_SETTINGS:-1}
     SERVER_HOST_V4_SETTINGS=${SERVER_HOST_V4_SETTINGS:-1}
@@ -159,6 +158,7 @@ function headless-install() {
     CLIENT_ALLOWED_IP_SETTINGS=${CLIENT_ALLOWED_IP_SETTINGS:-1}
     INSTALL_UNBOUND=${INSTALL_UNBOUND:-y}
     CLIENT_NAME=${CLIENT_NAME:-client}
+    INSTALL_WIREGUARD_WEB=${INSTALL_WIREGUARD_WEB:-n}
   fi
 }
 
@@ -545,10 +545,6 @@ if [ ! -f "$WG_CONFIG" ]; then
 
   # Ask To Install DNS
   ask-install-dns
-  
-  if [ "$INSTALL_WIREGUARD_WEB" == "" ]; then
-    read -rp "Do You Want To Install Web Interface? (y/n): " -e -i y INSTALL_WIREGUARD_WEB
-  fi
 
   # What would you like to name your first WireGuard peer?
   function client-name() {
@@ -560,6 +556,10 @@ if [ ! -f "$WG_CONFIG" ]; then
 
   # Client Name
   client-name
+
+  if [ "$INSTALL_WIREGUARD_WEB" == "" ]; then
+    read -rp "Do You Want To Install Web Interface? (y/n): " -e -i y INSTALL_WIREGUARD_WEB
+  fi
 
   # Install WireGuard Server
   function install-wireguard-server() {
