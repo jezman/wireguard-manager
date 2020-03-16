@@ -145,6 +145,7 @@ usage "$@"
 # Skips all questions and just get a client conf after install.
 function headless-install() {
   if [ "$HEADLESS_INSTALL" == "y" ]; then
+    INSTALL_WIREGUARD_WEB=${INSTALL_WIREGUARD_WEB:-n}
     IPV4_SUBNET_SETTINGS=${IPV4_SUBNET_SETTINGS:-1}
     IPV6_SUBNET_SETTINGS=${IPV6_SUBNET_SETTINGS:-1}
     SERVER_HOST_V4_SETTINGS=${SERVER_HOST_V4_SETTINGS:-1}
@@ -169,6 +170,10 @@ WIREGUARD_PUB_NIC="wg0"
 # Location For WG_CONFIG
 WG_CONFIG="/etc/wireguard/$WIREGUARD_PUB_NIC.conf"
 if [ ! -f "$WG_CONFIG" ]; then
+
+  if [ "$INSTALL_WIREGUARD_WEB" == "" ]; then
+    read -rp "Do You Want To Install Web Interface? (y/n): " -e -i y INSTALL_WIREGUARD_WEB
+  fi
 
   # Custom subnet
   function set-ipv4-subnet() {
@@ -655,21 +660,7 @@ if [ ! -f "$WG_CONFIG" ]; then
   function install-unbound() {
     if [ "$INSTALL_UNBOUND" = "y" ]; then
       # Installation Begins Here
-      if [ "$DISTRO" == "ubuntu" ]; then
-        # Install Unbound
-        apt-get install unbound unbound-host e2fsprogs resolvconf -y
-        if pgrep systemd-journal; then
-          systemctl stop systemd-resolved
-          systemctl disable systemd-resolved
-        else
-          service systemd-resolved stop
-          service systemd-resolved disable
-        fi
-      fi
-      if [ "$DISTRO" == "debian" ]; then
-        apt-get install unbound unbound-host e2fsprogs resolvconf -y
-      fi
-      if [ "$DISTRO" == "raspbian" ]; then
+      if ([ "$DISTRO" = "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ]); then
         apt-get install unbound unbound-host e2fsprogs resolvconf -y
       fi
       if [ "$DISTRO" == "centos" ] && [ "$DISTRO_VERSION" == "8" ]; then
@@ -742,6 +733,57 @@ if [ ! -f "$WG_CONFIG" ]; then
 
   # Running Install Unbound
   install-unbound
+
+  function install-wireguard-web() {
+    if [ "$INSTALL_WIREGUARD_WEB" = "y" ]; then
+    if ([ "$DISTRO" = "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ]); then
+      apt-get install nginx apache2-utils zip unzip -y
+    fi
+    if ([ "$DISTRO" = "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "fedora" ]); then
+      yum install nginx httpd-tools zip unzipv -y
+    fi
+    mkdir -p /etc/wireguard/web
+    curl https://gitlab.127-0-0-1.fr/vx3r/wg-gen-web/-/jobs/artifacts/master/download?job=build-front --create-dirs -o /etc/wireguard/web/front.zip
+    curl https://gitlab.127-0-0-1.fr/vx3r/wg-gen-web/-/jobs/artifacts/master/download?job=build-back --create-dirs -o /etc/wireguard/web/back.zip
+    unzip /etc/wireguard/web/front.zip
+    unzip /etc/wireguard/web/back.zip
+    rm -f /etc/wireguard/web/front.zip
+    rm -f /etc/wireguard/web/back.zip
+    echo "SERVER=127.0.0.1
+PORT=8080
+GIN_MODE=release
+WG_CONF_DIR=/etc/wireguard
+WG_INTERFACE_NAME=wg0.conf" >>/etc/wireguard/web/.env
+    htpasswd -c /etc/wireguard/web/.htpasswd $(whoami)
+    sed -i "s|# server_tokens off;|server_tokens off;|" /etc/nginx/nginx.conf
+    rm -f /etc/nginx/sites-enabled/default
+    echo "server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        server_name _;
+location / {
+            auth_basic                              "WireGuard Web Area";
+            auth_basic_user_file                    /etc/wireguard/web/.htpasswd;
+            proxy_set_header Host                   $proxy_host;
+            proxy_set_header X-Host                 $proxy_host;
+            proxy_set_header X-Real-IP              $remote_addr;
+            proxy_set_header X-Forwarded-For        $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto      $scheme;
+            proxy_set_header X-Forwarded-Host       $host;
+            proxy_set_header X-Forwarded-Port       $server_port;
+            proxy_set_header X-Forwarded-Uri        $request_uri;
+            proxy_pass                              http://127.0.0.1:8080;
+            }
+        }" >>/etc/nginx/sites-enabled/default
+    fi
+    if pgrep systemd-journal; then
+      systemctl enable nginx
+      systemctl restart nginx
+    else
+      service nginx enable
+      service nginx restart
+    fi
+  }
 
   # WireGuard Set Config
   function wireguard-setconf() {
