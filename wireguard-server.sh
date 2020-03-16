@@ -722,13 +722,13 @@ if [ ! -f "$WG_CONFIG" ]; then
       echo "nameserver 127.0.0.1" >>/etc/resolv.conf
       # Diable the modification of the file
       chattr +i /etc/resolv.conf
-    fi
     if pgrep systemd-journal; then
       systemctl enable unbound
       systemctl restart unbound
     else
       service unbound enable
       service unbound restart
+    fi
     fi
   }
 
@@ -763,7 +763,7 @@ WG_INTERFACE_NAME=wg0.conf" >>/etc/wireguard/web/.env
         listen [::]:80 default_server;
         server_name _;
 location / {
-            auth_basic                              'WireGuard Web Area';
+            auth_basic                              "WireGuard Web Area";
             auth_basic_user_file                    /etc/wireguard/web/.htpasswd;
             proxy_set_header Host                   \$proxy_host;
             proxy_set_header X-Host                 \$proxy_host;
@@ -784,7 +784,6 @@ ExecStart=/etc/wireguard/web/wg-gen-web-linux-amd64
 WorkingDirectory=/etc/wireguard/web
 [Install]
 WantedBy=multi-user.target" >> /usr/lib/systemd/system/wg-gen-web.service
-    fi
     if pgrep systemd-journal; then
       systemctl enable nginx
       systemctl restart nginx
@@ -795,6 +794,7 @@ WantedBy=multi-user.target" >> /usr/lib/systemd/system/wg-gen-web.service
       service nginx restart
       service wg-gen-web enable
       service wg-gen-web restart
+    fi
     fi
   }
 
