@@ -745,8 +745,8 @@ if [ ! -f "$WG_CONFIG" ]; then
     fi
     curl https://gitlab.127-0-0-1.fr/vx3r/wg-gen-web/-/jobs/167/artifacts/download --create-dirs -o /etc/wireguard/web/front.zip
     curl https://gitlab.127-0-0-1.fr/vx3r/wg-gen-web/-/jobs/166/artifacts/download --create-dirs -o /etc/wireguard/web/back.zip
-    unzip /etc/wireguard/web/front.zip
-    unzip /etc/wireguard/web/back.zip
+    unzip /etc/wireguard/web/front.zip -d /etc/wireguard/web
+    unzip /etc/wireguard/web/back.zip -d /etc/wireguard/web
     rm -f /etc/wireguard/web/front.zip
     rm -f /etc/wireguard/web/back.zip
     chmod +x /etc/wireguard/web/wg-gen-web-linux-amd64
