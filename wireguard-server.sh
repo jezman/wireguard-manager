@@ -750,6 +750,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     unzip /etc/wireguard/web/back.zip
     rm -f /etc/wireguard/web/front.zip
     rm -f /etc/wireguard/web/back.zip
+    chmod +x /etc/wireguard/web/wg-gen-web-linux-amd64
     echo "SERVER=127.0.0.1
 PORT=8080
 GIN_MODE=release
@@ -763,19 +764,19 @@ WG_INTERFACE_NAME=wg0.conf" >>/etc/wireguard/web/.env
         listen [::]:80 default_server;
         server_name _;
 location / {
-            auth_basic                              "WireGuard Web Area";
+            auth_basic                              'WireGuard Web Area';
             auth_basic_user_file                    /etc/wireguard/web/.htpasswd;
-            proxy_set_header Host                   $proxy_host;
-            proxy_set_header X-Host                 $proxy_host;
-            proxy_set_header X-Real-IP              $remote_addr;
-            proxy_set_header X-Forwarded-For        $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto      $scheme;
-            proxy_set_header X-Forwarded-Host       $host;
-            proxy_set_header X-Forwarded-Port       $server_port;
-            proxy_set_header X-Forwarded-Uri        $request_uri;
+            proxy_set_header Host                   \$proxy_host;
+            proxy_set_header X-Host                 \$proxy_host;
+            proxy_set_header X-Real-IP              \$remote_addr;
+            proxy_set_header X-Forwarded-For        \$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto      \$scheme;
+            proxy_set_header X-Forwarded-Host       \$host;
+            proxy_set_header X-Forwarded-Port       \$server_port;
+            proxy_set_header X-Forwarded-Uri        \$request_uri;
             proxy_pass                              http://127.0.0.1:8080;
             }
-        }" >>/etc/nginx/sites-enabled/default
+        }" > /etc/nginx/sites-enabled/default
     fi
     if pgrep systemd-journal; then
       systemctl enable nginx
