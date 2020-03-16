@@ -753,7 +753,7 @@ if [ ! -f "$WG_CONFIG" ]; then
     echo "SERVER=127.0.0.1
 PORT=8080
 GIN_MODE=release
-WG_CONF_DIR=/etc/wireguard
+WG_CONF_DIR=/etc/wireguard/web
 WG_INTERFACE_NAME=wg0.conf" >>/etc/wireguard/web/.env
     htpasswd -c /etc/wireguard/web/.htpasswd $(whoami)
     sed -i "s|# server_tokens off;|server_tokens off;|" /etc/nginx/nginx.conf
