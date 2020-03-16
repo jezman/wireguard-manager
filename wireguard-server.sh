@@ -763,7 +763,7 @@ WG_INTERFACE_NAME=$WIREGUARD_PUB_NIC.conf" >>/etc/wireguard/web/.env
         listen [::]:80 default_server;
         server_name _;
 location / {
-            auth_basic                              "WireGuard Web Area";
+            auth_basic                              'WireGuard Web Area';
             auth_basic_user_file                    /etc/wireguard/web/.htpasswd;
             proxy_set_header Host                   \$proxy_host;
             proxy_set_header X-Host                 \$proxy_host;
