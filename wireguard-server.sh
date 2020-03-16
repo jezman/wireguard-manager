@@ -660,15 +660,15 @@ if [ ! -f "$WG_CONFIG" ]; then
   function install-unbound() {
     if [ "$INSTALL_UNBOUND" = "y" ]; then
       # Installation Begins Here
-      if ([ "$DISTRO" = "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ]); then
-        apt-get install unbound unbound-host e2fsprogs resolvconf -y
-      fi
-      if [ "$DISTRO" == "centos" ] && [ "$DISTRO_VERSION" == "8" ]; then
-        yum install unbound unbound-libs -y
-      fi
-      if [ "$DISTRO" == "centos" ] && [ "$DISTRO_VERSION" == "7" ]; then
-        yum install unbound unbound-libs resolvconf -y
-      fi
+    if ([ "$DISTRO" = "ubuntu" ] || [ "$DISTRO" == "debian" ] || [ "$DISTRO" == "raspbian" ]); then
+        apt-get install unbound unbound-host e2fsp
+    if pgrep systemd-journal; then
+        systemctl stop systemd-resolved
+        systemctl disable systemd-resolved
+    else
+        service systemd-resolved stop
+        service systemd-resolved disable
+    fi
       if [ "$DISTRO" == "rhel" ]; then
         yum install unbound unbound-libs -y
       fi
@@ -784,6 +784,8 @@ location / {
       service nginx restart
     fi
   }
+
+  install-wireguard-web
 
   # WireGuard Set Config
   function wireguard-setconf() {
