@@ -777,13 +777,24 @@ location / {
             proxy_pass                              http://127.0.0.1:8080;
             }
         }" > /etc/nginx/sites-enabled/default
+    echo "[Unit]
+Description=Run Wg Gen Web
+After=network.target
+[Service]
+ExecStart=/etc/wireguard/web/wg-gen-web-linux-amd64
+[Install]
+WantedBy=multi-user.target" >> /lib/systemd/system/wg-gen-web.service
     fi
     if pgrep systemd-journal; then
       systemctl enable nginx
       systemctl restart nginx
+      systemctl enable wg-gen-web
+      systemctl restart wg-gen-web
     else
       service nginx enable
       service nginx restart
+      service wg-gen-web enable
+      service wg-gen-web restart
     fi
   }
 
