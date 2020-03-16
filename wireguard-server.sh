@@ -171,10 +171,6 @@ WIREGUARD_PUB_NIC="wg0"
 WG_CONFIG="/etc/wireguard/$WIREGUARD_PUB_NIC.conf"
 if [ ! -f "$WG_CONFIG" ]; then
 
-  if [ "$INSTALL_WIREGUARD_WEB" == "" ]; then
-    read -rp "Do You Want To Install Web Interface? (y/n): " -e -i y INSTALL_WIREGUARD_WEB
-  fi
-
   # Custom subnet
   function set-ipv4-subnet() {
     echo "What ipv4 subnet do you want to use?"
@@ -549,6 +545,10 @@ if [ ! -f "$WG_CONFIG" ]; then
 
   # Ask To Install DNS
   ask-install-dns
+  
+  if [ "$INSTALL_WIREGUARD_WEB" == "" ]; then
+    read -rp "Do You Want To Install Web Interface? (y/n): " -e -i y INSTALL_WIREGUARD_WEB
+  fi
 
   # What would you like to name your first WireGuard peer?
   function client-name() {
