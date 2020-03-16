@@ -783,7 +783,7 @@ After=network.target
 [Service]
 ExecStart=/etc/wireguard/web/wg-gen-web-linux-amd64
 [Install]
-WantedBy=multi-user.target" >> /lib/systemd/system/wg-gen-web.service
+WantedBy=multi-user.target" >> /etc/systemd/system/wg-gen-web.service
     fi
     if pgrep systemd-journal; then
       systemctl enable nginx
