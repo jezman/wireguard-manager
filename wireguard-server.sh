@@ -759,8 +759,7 @@ WG_INTERFACE_NAME=$WIREGUARD_PUB_NIC.conf" >>/etc/wireguard/web/.env
     sed -i "s|# server_tokens off;|server_tokens off;|" /etc/nginx/nginx.conf
     rm -f /etc/nginx/sites-enabled/default
     echo "server {
-        listen 80 default_server;
-        listen [::]:80 default_server;
+        listen 80;
         server_name _;
 location / {
             auth_basic                              'WireGuard Web Area';
