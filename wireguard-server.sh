@@ -743,10 +743,8 @@ if [ ! -f "$WG_CONFIG" ]; then
     if ([ "$DISTRO" = "centos" ] || [ "$DISTRO" == "rhel" ] || [ "$DISTRO" == "fedora" ]); then
       yum install nginx httpd-tools zip unzip -y
     fi
-    curl 'https://gitlab.127-0-0-1.fr/vx3r/wg-gen-web/-/jobs/artifacts/master/download?job=build-front'
- --create-dirs -o /etc/wireguard/web/front.zip
-    curl 'https://gitlab.127-0-0-1.fr/vx3r/wg-gen-web/-/jobs/artifacts/master/download?job=build-back'
---create-dirs -o /etc/wireguard/web/back.zip
+    curl 'https://gitlab.127-0-0-1.fr/vx3r/wg-gen-web/-/jobs/artifacts/master/download?job=build-front' --create-dirs -o /etc/wireguard/web/front.zip
+    curl 'https://gitlab.127-0-0-1.fr/vx3r/wg-gen-web/-/jobs/artifacts/master/download?job=build-back' --create-dirs -o /etc/wireguard/web/back.zip
     unzip /etc/wireguard/web/front.zip -d /etc/wireguard/web
     unzip /etc/wireguard/web/back.zip -d /etc/wireguard/web
     rm -f /etc/wireguard/web/front.zip
