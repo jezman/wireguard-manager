@@ -34,20 +34,16 @@ function virt-check() {
 # Virtualization Check
 virt-check
 
-# Detect Operating System
-function dist-check() {
-  # shellcheck disable=SC1090
-  if [ -e /etc/os-release ]; then
-    # shellcheck disable=SC1091
-    source /etc/os-release
-    DISTRO=$ID
-    # shellcheck disable=SC2034
-    DISTRO_VERSION=$VERSION_ID
+# Detect kernel version
+function kernel-version() {
+  if ! [ -x "$(command -v uname -r)" ]; then
+    uname -r
+    exit
   fi
 }
 
-# Check Operating System
-dist-check
+# Check kernel version
+kernel-version
 
 # Pre-Checks
 function check-system-requirements() {
@@ -75,6 +71,21 @@ function check-system-requirements() {
 
 # Run the function and check for requirements
 check-system-requirements
+
+# Detect Operating System
+function dist-check() {
+  # shellcheck disable=SC1090
+  if [ -e /etc/os-release ]; then
+    # shellcheck disable=SC1091
+    source /etc/os-release
+    DISTRO=$ID
+    # shellcheck disable=SC2034
+    DISTRO_VERSION=$VERSION_ID
+  fi
+}
+
+# Check Operating System
+dist-check
 
 function usage-guide() {
   # shellcheck disable=SC2027,SC2046
