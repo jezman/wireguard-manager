@@ -867,7 +867,6 @@ else
       CLIENT_DNS=$(head -n1 $WG_CONFIG | awk '{print $6}')
       MTU_CHOICE=$(head -n1 $WG_CONFIG | awk '{print $7}')
       NAT_CHOICE=$(head -n1 $WG_CONFIG | awk '{print $8}')
-      CLIENT_ALLOWED_IP=$CLIENT_ALLOWED_IP
       LASTIP4=$(grep "/32" $WG_CONFIG | tail -n1 | awk '{print $3}' | cut -d "/" -f 1 | cut -d "." -f 4)
       LASTIP6=$(grep "/128" $WG_CONFIG | tail -n1 | awk '{print $3}' | cut -d "/" -f 1 | cut -d "." -f 4)
       CLIENT_ADDRESS_V4="${PRIVATE_SUBNET_V4::-4}$((LASTIP4 + 1))"
